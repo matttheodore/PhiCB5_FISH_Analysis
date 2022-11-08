@@ -1,0 +1,190 @@
+
+---------------  Frame 1 --------------------
+Processing Frame 1
+region 1 discarded, area = 121
+region 3 discarded, area = 28
+region 4 discarded, area = 27
+region 5 discarded, area = 15
+region 6 discarded, area = 9
+region 7 discarded, area = 9
+region 8 discarded, area = 25
+region 9 discarded, area = 65
+region 12 discarded, area = 137
+fitting region 13 - quality check failed - cell too small
+fitting region 14 - quality check failed - cell too small
+region 18 discarded, area = 97
+fitting region 19 - quality check failed - cell too small
+region 21 discarded, area = 52
+region 22 discarded, area = 69
+Unable to create mesh
+region 24 discarded, area = 96
+fitting region 27 - quality check failed - cell too small
+region 28 discarded, area = 9
+
+---------------  Frame 2 --------------------
+Processing Frame 2
+region 1 discarded, area = 54
+region 2 discarded, area = 78
+region 3 discarded, area = 115
+region 6 discarded, area = 65
+region 7 discarded, area = 16
+region 8 discarded, area = 65
+region 10 discarded, area = 135
+region 12 discarded, area = 64
+region 14 discarded, area = 74
+region 15 discarded, area = 21
+region 16 discarded, area = 18
+
+---------------  Frame 3 --------------------
+Processing Frame 3
+region 1 discarded, area = 15
+region 2 discarded, area = 138
+region 3 discarded, area = 129
+region 4 discarded, area = 70
+region 5 discarded, area = 132
+region 6 discarded, area = 143
+region 7 discarded, area = 34
+region 8 discarded, area = 9
+fitting region 9 - quality check failed - cell too small
+region 10 discarded, area = 77
+region 11 discarded, area = 97
+fitting region 12 - quality check failed - cell too small
+region 14 discarded, area = 16
+region 16 discarded, area = 119
+region 17 discarded, area = 103
+fitting region 18 - quality check failed - cell too small
+region 20 discarded, area = 101
+region 21 discarded, area = 100
+region 22 discarded, area = 86
+region 23 discarded, area = 2
+fitting region 25 - quality check failed - cell too small
+region 26 discarded, area = 24
+region 27 discarded, area = 18
+fitting region 29 - quality check failed - cell too small
+region 30 discarded, area = 27
+region 32 discarded, area = 12
+region 34 discarded, area = 56
+region 35 discarded, area = 56
+region 36 discarded, area = 129
+region 37 discarded, area = 16
+region 38 discarded, area = 39
+region 39 discarded, area = 47
+region 40 discarded, area = 39
+region 41 discarded, area = 57
+region 42 discarded, area = 3
+region 44 discarded, area = 23
+region 45 discarded, area = 6
+region 46 discarded, area = 70
+region 47 discarded, area = 20
+region 48 discarded, area = 20
+region 49 discarded, area = 12
+region 50 discarded, area = 110
+region 51 discarded, area = 33
+region 52 discarded, area = 138
+region 54 discarded, area = 20
+region 57 discarded, area = 91
+cell on x=max boundary
+region 59 discarded, area = 89
+
+---------------  Frame 4 --------------------
+Processing Frame 4
+region 1 discarded, area = 9
+region 2 discarded, area = 9
+fitting region 3 - quality check failed - cell too small
+region 7 discarded, area = 2
+region 8 discarded, area = 61
+region 9 discarded, area = 127
+region 11 discarded, area = 32
+region 12 discarded, area = 41
+region 13 discarded, area = 27
+region 14 discarded, area = 9
+region 15 discarded, area = 9
+fitting region 17 - quality check failed - cell too small
+fitting region 18 - quality check failed - cell too small
+region 21 discarded, area = 3
+region 22 discarded, area = 5
+region 23 discarded, area = 34
+region 24 discarded, area = 3
+region 25 discarded, area = 9
+region 27 discarded, area = 86
+region 28 discarded, area = 96
+region 32 discarded, area = 71
+region 33 discarded, area = 83
+fitting region 34 - quality check failed - cell too small
+region 35 discarded, area = 71
+region 36 discarded, area = 134
+fitting region 37 - quality check failed - cell too small
+region 39 discarded, area = 111
+region 42 discarded, area = 101
+region 43 discarded, area = 50
+region 45 discarded, area = 43
+region 47 discarded, area = 9
+fitting region 48 - quality check failed - cell too small
+region 49 discarded, area = 12
+fitting region 51 - quality check failed - cell too small
+region 52 discarded, area = 47
+region 53 discarded, area = 4
+region 54 discarded, area = 43
+cell on x=max boundary
+region 57 discarded, area = 123
+region 58 discarded, area = 15
+region 59 discarded, area = 90
+cell on x=max boundary
+cell on x=max boundary
+region 62 discarded, area = 93
+region 63 discarded, area = 35
+cell on x=max boundary
+region 65 discarded, area = 130
+region 66 discarded, area = 3
+region 67 discarded, area = 39
+region 68 discarded, area = 36
+region 69 discarded, area = 14
+region 70 discarded, area = 9
+region 71 discarded, area = 17
+
+---------------  Frame 5 --------------------
+Processing Frame 5
+region 1 discarded, area = 18
+fitting region 2 - quality check failed - cell too small
+fitting region 4 - quality check failed - cell too small
+region 6 discarded, area = 107
+region 7 discarded, area = 2
+region 9 discarded, area = 32
+region 10 discarded, area = 5
+region 11 discarded, area = 35
+region 12 discarded, area = 21
+region 13 discarded, area = 124
+region 14 discarded, area = 94
+region 16 discarded, area = 118
+region 17 discarded, area = 83
+region 18 discarded, area = 97
+region 19 discarded, area = 94
+region 20 discarded, area = 66
+region 22 discarded, area = 83
+region 23 discarded, area = 81
+region 24 discarded, area = 42
+region 25 discarded, area = 121
+region 26 discarded, area = 108
+region 27 discarded, area = 114
+region 28 discarded, area = 5
+region 30 discarded, area = 105
+region 31 discarded, area = 74
+region 32 discarded, area = 15
+fitting region 33 - quality check failed - cell too small
+fitting region 35 - quality check failed - cell too small
+region 38 discarded, area = 80
+region 39 discarded, area = 142
+region 40 discarded, area = 22
+region 41 discarded, area = 108
+region 43 discarded, area = 37
+region 44 discarded, area = 51
+region 46 discarded, area = 62
+region 47 discarded, area = 58
+region 48 discarded, area = 35
+region 49 discarded, area = 47
+region 50 discarded, area = 95
+region 51 discarded, area = 89
+region 52 discarded, area = 66
+region 54 discarded, area = 29
+cell on y=max boundary
+region 56 discarded, area = 19

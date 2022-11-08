@@ -1,0 +1,193 @@
+---
+title: "10-05.fish"
+author: "Arihan Gupta"
+date: "10/19/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Housekeeping
+
+```{r}
+date()
+Sys.time()
+getwd()
+list.files()
+.libPaths()
+.Library
+sessionInfo()
+search()
+searchpaths()
+R.Version()
+
+```
+
+#checking and installing packages
+
+```{r}
+
+packages <- c("knitr", "ggplot2", "dplyr", "tidyr", "readxl", "ggpubr", "skimr", "DataExplorer", "tidyverse", "skimr", "svglite", "readxl","tidyxl", "ggforce", "ggpubr", "ggsci", "ggthemes", "ragg", "matrixStats", "gplots", "devtools")
+
+
+install.packages(setdiff(packages, rownames(installed.packages()))) 
+
+update.packages (packages) 
+
+for (i in 1:length(packages)) {
+
+library(packages[i], character.only = TRUE)
+  
+  
+}
+
+
+```
+
+
+# Data Import
+
+```{r}
+
+
+
+inf0 <- read.csv("Data/data_table.csv", header=T)
+inf180 <- read.csv("Data/180-data_table.csv", header=T)
+uninf200 <- read.csv("Data/200-data_table.csv", header=T)
+
+```
+
+
+### Not sure what this is, i think just segmenting the dataset to only bring in the means originally. Always good to bring all the data, then subset. 
+
+```{r}
+means.180.1 <- read.csv("Data/180.1.csv", header=T)
+means.180.2 <- read.csv("Data/180.2.csv", header=T)
+means.180.3 <- read.csv("Data/180.3.csv", header=T)
+means.180.4 <- read.csv("Data/180.4.csv", header=T)
+means.180.5 <- read.csv("Data/180.5.csv", header=T)
+meanInt180 <- mean(c(means.180.1$Mean, means.180.2$Mean, means.180.3$Mean, means.180.4$Mean, means.180.5$Mean))
+
+means.0.1 <- read.csv("Data/0.1.csv", header=T)
+means.0.2 <- read.csv("Data/0.2.csv", header=T)
+means.0.3 <- read.csv("Data/0.3.csv", header=T)
+means.0.4 <- read.csv("Data/0.4.csv", header=T)
+means.0.5 <- read.csv("Data/0.5.csv", header=T)
+meanInt0 <- mean(c(means.0.1$Mean, means.0.2$Mean, means.0.3$Mean, means.0.4$Mean, means.0.5$Mean))
+
+means.200.1 <- read.csv("Data/200.1.csv", header=T)
+means.200.2 <- read.csv("Data/200.2.csv", header=T)
+means.200.3 <- read.csv("Data/200.3.csv", header=T)
+means.200.4 <- read.csv("Data/200.4.csv", header=T)
+means.200.5 <- read.csv("Data/200.5.csv", header=T)
+meanInt200 <- mean(c(means.200.1$Mean, means.200.2$Mean, means.200.3$Mean, means.200.4$Mean, means.200.5$Mean))
+
+```
+
+
+
+
+# Exploratory Data Analysis
+
+```{r}
+
+ls() # show me all the data objects that are imported
+
+
+
+
+```
+
+```{r}
+
+newData1 = as.data.frame(data1$Predicted.Class)
+newData1[,1] = "0"
+newData1 <- cbind(newData1, data1$Size.in.pixels, data1$Mean.Intensity_2, data1$Maximum.intensity_2, data1$Total.Intensity_2)
+colnames(newData1) <- c("ID", "Size", "MeanInt", "MaxInt", "SumInt")
+newData1 <- cbind(newData1, ((newData1$MeanInt)/meanInt0), ((newData1$MaxInt)/meanInt0), ((newData1$SumInt)/meanInt0), ((newData1$MeanInt - meanInt0)/meanInt0))
+colnames(newData1) <- c("ID", "Size", "MeanInt", "MaxInt", "SumInt", "StandMean", "StandMax", "StandSum", "PercentIncrease")
+
+newinf180 = as.data.frame(inf180$Predicted.Class)
+newinf180[,1] = "180"
+newinf180 <- cbind(newinf180, inf180$Size.in.pixels, inf180$Mean.Intensity_2, inf180$Maximum.intensity_2, inf180$Total.Intensity_2)
+colnames(newinf180) <- c("ID", "Size", "MeanInt", "MaxInt", "SumInt")
+newinf180 <- cbind(newinf180, ((newinf180$MeanInt)/meanInt180), ((newinf180$MaxInt)/meanInt180), ((newinf180$SumInt)/meanInt0), ((newinf180$MeanInt - meanInt180)/meanInt180))
+colnames(newinf180) <- c("ID", "Size", "MeanInt", "MaxInt", "SumInt", "StandMean", "StandMax", "StandSum", "PercentIncrease")
+
+newuninf200 = as.data.frame(uninf200$Predicted.Class)
+newuninf200[,1] = "200"
+newuninf200 <- cbind(newuninf200, uninf200$Size.in.pixels, uninf200$Mean.Intensity_2, uninf200$Maximum.intensity_2, uninf200$Total.Intensity_2)
+colnames(newuninf200) <- c("ID", "Size", "MeanInt", "MaxInt", "SumInt")
+newuninf200 <- cbind(newuninf200, ((newuninf200$MeanInt)/meanInt200), ((newuninf200$MaxInt)/meanInt200), ((newuninf200$SumInt)/meanInt0), ((newuninf200$MeanInt - meanInt200)/meanInt200))
+colnames(newuninf200) <- c("ID", "Size", "MeanInt", "MaxInt", "SumInt", "StandMean", "StandMax", "StandSum", "PercentIncrease")
+
+```
+
+
+# So I am guessing this is where the real data starts, as in the whole dataset?   
+you can answer in normal text, I cannot remember what that does in the knit function we will see. 
+
+
+# Start EDA
+
+so right now our goal is to simply get a snapshot of the data, see if anything needs to be cleaned, get an idea of the distributions and hwo they compare with one another. We use what we know about the data to check if the data is picking up what we know is there before we ask questions of the data we do not know the answer to . 
+
+Why is this important?
+
+```{r}
+
+
+
+
+
+
+
+
+```
+
+
+```{r}
+
+masterData <- rbind(newData1, newinf180, newuninf200)
+p1 <- ggplot(data = masterData, mapping = aes(x= MaxInt, color = ID)) + geom_histogram(binwidth = 200)+ labs(x = "Max")
+p1
+p2 <- ggplot(data = masterData, mapping = aes(x= MeanInt, color = ID)) + geom_histogram(binwidth = 200)+ labs(x = "Mean")
+p2
+p3 <- ggplot(data = masterData, mapping = aes(x= SumInt, color = ID)) + geom_histogram(bins = 63)+ labs(x = "Sum")
+p3
+p3 <- ggplot(data = masterData, mapping = aes(x= Size, color = ID)) + geom_histogram(bins = 63)+ labs(x = "Size")
+p3
+p4 <- ggplot(data = masterData, mapping = aes(x= Size, y = SumInt ,color = ID)) + geom_point() + labs(x = "Size", y = "Sum of Intensity")
+p4
+p5 <- ggplot(data = newinf180, mapping = aes(x= SumInt, color = ID)) + geom_histogram(bins = 200)+ labs(x = "Sum")
+p5
+p6 <- ggplot(data = newinf180, mapping = aes(x= MaxInt, color = ID)) + geom_histogram(bins = 60)+ labs(x = "Max")
+p6
+p7 <- ggplot(data = masterData, mapping = aes(x= Size, y = StandSum ,color = ID)) + geom_point() + labs(x = "Size", y = "Standardized sum")
+p7
+p8 <- ggplot(masterData, aes(ID,SumInt)) + geom_boxplot() + labs(x = "Sum")
+p8
+p9 <- ggplot(data = masterData, mapping = aes(x= StandMean, color = ID)) + geom_histogram(bins = 75)+ labs(x = "Standardized Mean")
+p9
+p10 <- ggplot(data = masterData, mapping = aes(x= StandMax, color = ID)) + geom_histogram(bins = 75)+ labs(x = "Standardized Max")
+p10
+p11 <- ggplot(data = masterData, mapping = aes(x= StandSum, color = ID)) + geom_histogram(bins = 75)+ labs(x = "Standardized Sum")
+p11
+p12 <- ggplot(data = masterData, mapping = aes(x= PercentIncrease, color = ID)) + geom_histogram(bins = 75)+ labs(x = "Standardized Sum")
+p12
+```
+
+#For control data
+```{r}
+pControl0minscatter <- ggplot(data = newData1, mapping = aes(x= Size, y = SumInt ,color = ID)) + geom_point() + labs(x = "Size", y = "Sum of Intensity")
+pControl0minscatter
+
+pControl180minscatter <- ggplot(data = newuninf200, mapping = aes(x= Size, y = SumInt ,color = ID)) + geom_point() + labs(x = "Size", y = "Sum of Intensity")
+pControl180minscatter
+
+
+
+```
+

@@ -1,0 +1,183 @@
+# Exploratory Data analysis
+
+
+### Always intiialize the system for good record keeping and we know what versions everything was run on.
+
+```{r}
+
+date()
+Sys.time()
+getwd()
+list.files()
+.libPaths()
+.Library
+sessionInfo()
+search()
+searchpaths()
+R.version.string()
+
+
+```
+
+### Checking and installing packages
+
+```{r}
+
+packages <- c("ggplot2", "dplyr", "tidyr", "readxl", "ggpubr", "skimr", "DataExplorer", "tidyverse", "skimr", "svglite", "readxl","tidyxl", "ggforce", "ggpubr", "ggsci", "ggthemes", "ragg", "gplots", "devtools", "readr")
+
+### for this data we need "Biobase", "org.HS.eg.db", "AnnotationDbi" ... but it says these aren't available for this version of R -- they have probably been updated, generally theres an online central database for R and bioconductor especially bioinformatics. 
+
+
+install.packages(setdiff(packages, rownames(installed.packages()))) 
+
+update.packages (packages) 
+
+for (i in 1:length(packages)) {
+
+library(packages[i], character.only = TRUE)
+  
+  
+}
+
+
+```
+
+
+
+### Load the Data
+```{r}
+
+
+```{r}
+
+
+
+inf0 <- read.csv("Data/data_table.csv", header=T)
+inf180 <- read.csv("Data/180-data_table.csv", header=T)
+uninf200 <- read.csv("Data/200-data_table.csv", header=T)
+
+```
+
+
+### You can use tables, plots, summaries to look at your data, but introduce() function from data explorer is a great overview 
+
+see 
+https://cran.r-project.org/web/packages/DataExplorer/vignettes/dataexplorer-intro.html#exploratory-data-analysis
+
+for a more formal up to date review when workign with big datasets
+
+```{r}
+introduce(GFP)
+
+head(GFP)
+tail(GFP)
+
+# Relevant Data to us is Size in Pixels, maximum Intensity, Minimum Intensity, Mean Intensity, Variance of Intensity. personally I am going to remake the dataframe with these parameters. 
+
+```
+
+
+```{r}
+
+GFP_data <- select(GFP, 'object_id', 'Size in pixels', 'Maximum intensity', 'Minimum intensity', 'Mean Intensity', 'Variance of Intensity')
+
+introduce(GFP_data)
+
+
+## Sometimes real word data can be really messy, another good thing to do can be to plot the missing data as you will see below. This allows us to check the data, even though introduce() tells us numebr of missing values, we want to see where those values are, or if there are none at all. 
+
+plot_missing(GFP_data)  # none will show up because no data is missing
+
+```
+
+```{r}
+
+table(FACTORVARIABLES, useNA = "ifany" # it can be useful to put factors in a table, none here though, include NAs to check for NA
+
+
+###--- look for missing values --- #####
+
+
+# is.na checks for NA values
+table(is.na(GFP[1])) # use row or column numbers [] with these if you onyl want to take some columns because they need the structure of the df versus a string call using the $
+
+# Make the distribution of NA's by columns/measurements
+sample_na = rowSums(is.na(GFP_data))
+table(sample_na)
+
+# Make the distribution of NA's by samples
+measurement_na = colSums(is.na(GFP_data))
+table(measurement_na)
+
+#### Make sure dimensions match up #####
+identical(colnames(data),as.character(pdata$sample.id))  ##check if they are identical colnames and the ids if you have multiple tables (subject information)
+```
+
+```{r}
+
+### Take a look at the distribution of all the variables ###
+
+plot_histogram(GFP_data)
+
+
+# Slicing and dicing can be crucial to analysis and see where you get variations. If you want to predict an outcome, it is good to look at all the features based on that value. 
+
+plot_boxplot(GFP_data, by = 'Size in pixels')
+plot_boxplot(GFP_data, by ='Mean Intensity')
+
+# Finally there is Principal component analysis, this is a way of taking very large datasets and converging their covariances onto a few principal components( groups containing multiple attributes. Basically kind of a lazy way of first looking at where most of the variance comes from and then checking into those principal components, by convention PC1 being the largest)
+```
+
+# My Analysis 
+
+# inf0
+
+
+### From hist
+
+Meximum intensity_1 has a large right skew, maybe 2 means. 
+Mean.intensity_1 has a large right skew.
+Min Intensity_1 large right skew
+No suprise variance Intensity_1 large right skew
+
+### From qqplots
+
+Suprisingly Object are is non-normal, shouldnt be the case with cells. 
+Variance in 1 and 2 stick out 
+Total intensity looks like size dist
+Both Corrected intensities on 2 look big right skew. 
+
+--
+# inf180
+
+
+### From hist
+Max. Intensty_1&2 right skew, same for mean intensity and Min intensity 1. Min intensity 2 much broader hist levels.  
+
+Corrected mean intensity stretches further right skew than all others
+
+### From qqplots
+
+
+--
+
+# uninf200
+
+
+### From hist
+object area is larger, all intensity channel 2 lower than inf180
+mean_intensity1 much larger
+
+
+
+### From qqplots
+
+```{r}
+
+# NOTE: If doing this with a large dataset it is advisable that you pair down to the relevant data measurements first (so not id or something like that which will simply add a variance noise to everything)
+
+GFP_pca <- drop_columns(GFP_data, "object_id")
+plot_prcomp(GFP_pca)
+
+
+```

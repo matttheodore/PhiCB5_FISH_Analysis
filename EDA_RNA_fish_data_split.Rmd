@@ -1,0 +1,303 @@
+---
+title: "10-05.fish"
+author: "Arihan Gupta"
+date: "10/19/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Housekeeping
+
+```{r}
+date()
+Sys.time()
+getwd()
+list.files()
+.libPaths()
+.Library
+sessionInfo()
+search()
+searchpaths()
+R.Version()
+
+```
+
+### Checking and installing packages
+
+```{r, eval = FALSE}
+
+packages <- c("ggplot2", "dplyr", "tidyr", "readxl", "ggpubr", "skimr", "DataExplorer", "tidyverse", "skimr", "svglite", "readxl","tidyxl", "ggforce", "ggpubr", "ggsci", "ggthemes", "ragg", "gplots", "devtools", "readr")
+
+### for this data we need "Biobase", "org.HS.eg.db", "AnnotationDbi" ... but it says these aren't available for this version of R -- they have probably been updated, generally theres an online central database for R and bioconductor especially bioinformatics. 
+
+
+install.packages(setdiff(packages, rownames(installed.packages()))) 
+
+update.packages (packages) 
+
+for (i in 1:length(packages)) {
+
+library(packages[i], character.only = TRUE)
+  
+  
+}
+
+
+```
+
+
+# Data Import
+
+```{r}
+
+
+data1 <- read.csv("Data/data_table.csv", header=T)
+data2 <- read.csv("Data/180-data_table.csv", header=T)
+data3 <- read.csv("Data/200-data_table.csv", header=T)
+
+
+rawinf0 <- read.csv("Data/data_table.csv", header=T)
+rawinf180 <- read.csv("Data/180-data_table.csv", header=T)
+rawuninf200 <- read.csv("Data/200-data_table.csv", header=T)
+
+```
+
+
+```{r}
+means.180.1 <- read.csv("Data/180.1.csv", header=T)
+means.180.2 <- read.csv("Data/180.2.csv", header=T)
+means.180.3 <- read.csv("Data/180.3.csv", header=T)
+means.180.4 <- read.csv("Data/180.4.csv", header=T)
+means.180.5 <- read.csv("Data/180.5.csv", header=T)
+meanInt180 <- mean(c(means.180.1$Mean, means.180.2$Mean, means.180.3$Mean, means.180.4$Mean, means.180.5$Mean))
+
+means.0.1 <- read.csv("Data/0.1.csv", header=T)
+means.0.2 <- read.csv("Data/0.2.csv", header=T)
+means.0.3 <- read.csv("Data/0.3.csv", header=T)
+means.0.4 <- read.csv("Data/0.4.csv", header=T)
+means.0.5 <- read.csv("Data/0.5.csv", header=T)
+meanInt0 <- mean(c(means.0.1$Mean, means.0.2$Mean, means.0.3$Mean, means.0.4$Mean, means.0.5$Mean))
+
+means.200.1 <- read.csv("Data/200.1.csv", header=T)
+means.200.2 <- read.csv("Data/200.2.csv", header=T)
+means.200.3 <- read.csv("Data/200.3.csv", header=T)
+means.200.4 <- read.csv("Data/200.4.csv", header=T)
+means.200.5 <- read.csv("Data/200.5.csv", header=T)
+meanInt200 <- mean(c(means.200.1$Mean, means.200.2$Mean, means.200.3$Mean, means.200.4$Mean, means.200.5$Mean))
+
+```
+
+
+
+
+ looking around
+
+```{r}
+
+ls() # show me all the data objects that are present
+
+
+
+
+```
+
+```{r}
+
+# newData1 = as.data.frame(data1$Predicted.Class)
+# newData1[,1] = "0"
+# newData1 <- cbind(newData1, data1$Size.in.pixels, data1$Mean.Intensity_2, data1$Maximum.intensity_2, data1$Total.Intensity_2)
+# colnames(newData1) <- c("ID", "Size", "MeanInt", "MaxInt", "SumInt")
+# newData1 <- cbind(newData1, ((newData1$MeanInt)/meanInt0), ((newData1$MaxInt)/meanInt0), ((newData1$SumInt)/meanInt0), ((newData1$MeanInt - meanInt0)/meanInt0))
+# colnames(newData1) <- c("ID", "Size", "MeanInt", "MaxInt", "SumInt", "StandMean", "StandMax", "StandSum", "PercentIncrease")
+# 
+# newinf180 = as.data.frame(data2$Predicted.Class)
+# newinf180[,1] = "180"
+# newinf180 <- cbind(newinf180, data1$Size.in.pixels, data1$Mean.Intensity_2, data1$Maximum.intensity_2, data1$Total.Intensity_2)
+# colnames(newinf180) <- c("ID", "Size", "MeanInt", "MaxInt", "SumInt")
+# newinf180 <- cbind(newinf180, ((newinf180$MeanInt)/meanInt180), ((newinf180$MaxInt)/meanInt180), ((newinf180$SumInt)/meanInt0), ((newinf180$MeanInt - meanInt180)/meanInt180))
+# colnames(newinf180) <- c("ID", "Size", "MeanInt", "MaxInt", "SumInt", "StandMean", "StandMax", "StandSum", "PercentIncrease")
+# 
+# newuninf200 = as.data.frame(data3$Predicted.Class)
+# newuninf200[,1] = "200"
+# newuninf200 <- cbind(newuninf200, uninf200$Size.in.pixels, uninf200$Mean.Intensity_2, uninf200$Maximum.intensity_2, uninf200$Total.Intensity_2)
+# colnames(newuninf200) <- c("ID", "Size", "MeanInt", "MaxInt", "SumInt")
+# newuninf200 <- cbind(newuninf200, ((newuninf200$MeanInt)/meanInt200), ((newuninf200$MaxInt)/meanInt200), ((newuninf200$SumInt)/meanInt0), ((newuninf200$MeanInt - meanInt200)/meanInt200))
+# colnames(newuninf200) <- c("ID", "Size", "MeanInt", "MaxInt", "SumInt", "StandMean", "StandMax", "StandSum", "PercentIncrease")
+
+```
+
+```{r}
+
+inf0 <- select(rawinf0, 'object_id', 'Size.in.pixels', 'Object.Area',  'Variance.of.Intensity_0', 'Variance.of.Intensity_1', 'Variance.of.Intensity_2', 'Mean.Intensity_0', 'Mean.Intensity_1', 'Mean.Intensity_2', 'Maximum.intensity_0', 'Maximum.intensity_1', 'Maximum.intensity_2', 'Minimum.intensity_0', 'Minimum.intensity_1','Minimum.intensity_2', 'Total.Intensity_0', 'Total.Intensity_1','Total.Intensity_2')
+
+inf0 <- mutate(inf0, corrected_mean_intensity_2 = Mean.Intensity_2/meanInt0, normalized_intensity_2 = (Mean.Intensity_2-meanInt0)/meanInt0, normal_Maximum.intensity_2 = Maximum.intensity_2/meanInt0, cond = (rep("infected", nrow(inf0))), time = (rep("0", nrow(inf0))), id = (rep("inf0", nrow(inf0))))
+
+inf0 <- mutate(inf0, cond = as.factor(cond), time = as.factor(time), id = as.factor(id))
+
+inf180 <- select(rawinf180, 'object_id', 'Size.in.pixels', 'Object.Area',  'Variance.of.Intensity_0', 'Variance.of.Intensity_1', 'Variance.of.Intensity_2', 'Mean.Intensity_0', 'Mean.Intensity_1', 'Mean.Intensity_2', 'Maximum.intensity_0', 'Maximum.intensity_1', 'Maximum.intensity_2', 'Minimum.intensity_0', 'Minimum.intensity_1','Minimum.intensity_2', 'Total.Intensity_0', 'Total.Intensity_1','Total.Intensity_2')
+
+inf180 <- mutate(inf180, corrected_mean_intensity_2 = Mean.Intensity_2/meanInt180, normalized_intensity_2 = (Mean.Intensity_2-meanInt180)/meanInt180, normal_Maximum.intensity_2 = Maximum.intensity_2/meanInt180, cond = (rep("infected", nrow(inf180))), time = (rep("180", nrow(inf180))), id = (rep("inf180", nrow(inf180))))
+
+inf180 <- mutate(inf180, cond = as.factor(cond), time = as.factor(time), id = as.factor(id))
+
+uninf200 <- select(rawuninf200, 'object_id', 'Size.in.pixels', 'Object.Area',  'Variance.of.Intensity_0', 'Variance.of.Intensity_1', 'Variance.of.Intensity_2', 'Mean.Intensity_0', 'Mean.Intensity_1', 'Mean.Intensity_2', 'Maximum.intensity_0', 'Maximum.intensity_1', 'Maximum.intensity_2', 'Minimum.intensity_0', 'Minimum.intensity_1','Minimum.intensity_2', 'Total.Intensity_0', 'Total.Intensity_1','Total.Intensity_2')
+
+uninf200 <- mutate(uninf200, corrected_mean_intensity_2 = Mean.Intensity_2/meanInt200, normalized_intensity_2 = ((Mean.Intensity_2-meanInt200)/meanInt200), normal_Maximum.intensity_2 = Maximum.intensity_2/meanInt200, cond = (rep("uninfected", nrow(uninf200))), time = (rep("200", nrow(uninf200))), id = (rep("uninf200", nrow(uninf200))))
+
+uninf200 <- mutate(uninf200, cond = as.factor(cond), time = as.factor(time), id = as.factor(id))
+
+data <- rbind(inf0, inf180, uninf200)
+
+
+```
+
+
+
+
+### You can use tables, plots, summaries to look at your data, but introduce() function from data explorer is a great overview 
+
+see 
+https://cran.r-project.org/web/packages/DataExplorer/vignettes/dataexplorer-intro.html#exploratory-data-analysis
+
+for a more formal up to date review when workign with big datasets
+
+```{r}
+introduce(data)
+
+head(data)
+tail(data)
+
+# Relevant Data to us is Size in Pixels, maximum Intensity, Minimum Intensity, Mean Intensity, Variance of Intensity. personally I am going to remake the dataframe with these parameters. 
+
+```
+
+
+```{r}
+
+
+introduce(data)
+
+
+## Sometimes real word data can be really messy, another good thing to do can be to plot the missing data as you will see below. This allows us to check the data, even though introduce() tells us numebr of missing values, we want to see where those values are, or if there are none at all. 
+
+plot_missing(data)  # none will show up because no data is missing
+
+```
+
+```{r}
+
+table(FACTORVARIABLES, useNA = "ifany" # it can be useful to put factors in a table, none here though, include NAs to check for NA
+
+
+###--- look for missing values --- #####
+
+
+# is.na checks for NA values
+table(is.na(GFP[1])) # use row or column numbers [] with these if you onyl want to take some columns because they need the structure of the df versus a string call using the $
+
+# Make the distribution of NA's by columns/measurements
+sample_na = rowSums(is.na(data))
+table(sample_na)
+
+# Make the distribution of NA's by samples
+measurement_na = colSums(is.na(data))
+table(measurement_na)
+
+#### Make sure dimensions match up #####
+identical(data$Size.in.pixels, data$Object.Area)  ##check if they are identical colnames and the ids if you have multiple tables (subject information)
+```
+
+```{r}
+
+### Take a look at the distribution of all the variables ###
+
+inf0hist_data <-plot_histogram(inf0, title = "Inf0")
+inf180hist_data <-plot_histogram(inf180, title = "inf180")
+uninf200hist_data <-plot_histogram(uninf200, title = "uninf200")
+
+### Quantile-Quantile plots help us visualize deviations away from a specific probability distribution, after analyzing these plots we may have to apply transformations as you have mentioned earlier (such as a log) to do some type of linear regression. Default for the plot line is the normal distribution. 
+
+qqplot_inf0 <-plot_qq(inf0, title = "Inf0")
+qqplot_inf180 <-plot_qq(inf180, title = "Inf180")
+qqplot_uninf200 <-plot_qq(uninf200, title = "Uninf200")
+
+# Slicing and dicing can be crucial to analysis and see where you get variations. If you want to predict an outcome, it is good to look at all the features based on that value. 
+
+# Minint_boxplot_inf0 <- plot_boxplot(inf0, by = 'Minimum.intensity_0')
+# Minint_boxplot_inf0 <- plot_boxplot(inf0, by = 'Minimum.intensity_0')
+# Minint_boxplot_inf0 <- plot_boxplot(inf0, by = 'Minimum.intensity_0')
+
+
+```
+
+## PCA
+
+```{r}
+
+inf0_pca <- drop_columns(inf0, "object_id")
+inf0_pca_plot <- plot_prcomp(inf0_pca)
+
+data_pca <- drop_columns(data, c("object_id", "Size.in.pixels"))
+data_pca_plot <- plot_prcomp(data)
+```
+
+
+# So I am guessing this is where the real data starts, as in the whole dataset?   
+you can answer in normal text, I cannot remember what that does in the knit function we will see. 
+
+
+# Start EDA
+
+so right now our goal is to simply get a snapshot of the data, see if anything needs to be cleaned, get an idea of the distributions and how they compare with one another. We use what we know about the data to check if the data is picking up what we know is there before we ask questions of the data we do not know the answer to . 
+
+Why is this important?
+
+
+
+
+```{r}
+
+# masterData <- rbind(newData1, newinf180, newuninf200)
+# p1 <- ggplot(data = masterData, mapping = aes(x= MaxInt, color = ID)) + geom_histogram(binwidth = 200)+ labs(x = "Max")
+# p1
+# p2 <- ggplot(data = masterData, mapping = aes(x= MeanInt, color = ID)) + geom_histogram(binwidth = 200)+ labs(x = "Mean")
+# p2
+# p3 <- ggplot(data = masterData, mapping = aes(x= SumInt, color = ID)) + geom_histogram(bins = 63)+ labs(x = "Sum")
+# p3
+# p3 <- ggplot(data = masterData, mapping = aes(x= Size, color = ID)) + geom_histogram(bins = 63)+ labs(x = "Size")
+# p3
+# p4 <- ggplot(data = masterData, mapping = aes(x= Size, y = SumInt ,color = ID)) + geom_point() + labs(x = "Size", y = "Sum of Intensity")
+# p4
+# p5 <- ggplot(data = newinf180, mapping = aes(x= SumInt, color = ID)) + geom_histogram(bins = 200)+ labs(x = "Sum")
+# p5
+# p6 <- ggplot(data = newinf180, mapping = aes(x= MaxInt, color = ID)) + geom_histogram(bins = 60)+ labs(x = "Max")
+# p6
+# p7 <- ggplot(data = masterData, mapping = aes(x= Size, y = StandSum ,color = ID)) + geom_point() + labs(x = "Size", y = "Standardized sum")
+# p7
+# p8 <- ggplot(masterData, aes(ID,SumInt)) + geom_boxplot() + labs(x = "Sum")
+# p8
+# p9 <- ggplot(data = masterData, mapping = aes(x= StandMean, color = ID)) + geom_histogram(bins = 75)+ labs(x = "Standardized Mean")
+# p9
+# p10 <- ggplot(data = masterData, mapping = aes(x= StandMax, color = ID)) + geom_histogram(bins = 75)+ labs(x = "Standardized Max")
+# p10
+# p11 <- ggplot(data = masterData, mapping = aes(x= StandSum, color = ID)) + geom_histogram(bins = 75)+ labs(x = "Standardized Sum")
+# p11
+# p12 <- ggplot(data = masterData, mapping = aes(x= PercentIncrease, color = ID)) + geom_histogram(bins = 75)+ labs(x = "Standardized Sum")
+# p12
+```
+
+#For control data
+```{r}
+# pControl0minscatter <- ggplot(data = newData1, mapping = aes(x= Size, y = SumInt ,color = ID)) + geom_point() + labs(x = "Size", y = "Sum of Intensity")
+# pControl0minscatter
+# 
+# pControl180minscatter <- ggplot(data = newuninf200, mapping = aes(x= Size, y = SumInt ,color = ID)) + geom_point() + labs(x = "Size", y = "Sum of Intensity")
+# pControl180minscatter
+
+
+
+```
+
