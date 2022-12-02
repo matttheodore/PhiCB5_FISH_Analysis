@@ -223,6 +223,7 @@ for(strainNumber in 1:length(splitList))
  }
 idAvg <- cbind(idAvg, rowMeans(idAvg,na.rm=TRUE))
 colnames(idAvg) <- c("100", "200", "300", "400", "means")
+rownames(idAvg) <- c("LZ08", "LZ23", "LZ25", "LZ28", "LZ29", "LZ30")
 print(idAvg)
 dfMasters<-dfNew
 ```
