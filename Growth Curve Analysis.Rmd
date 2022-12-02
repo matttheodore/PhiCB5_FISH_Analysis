@@ -1,0 +1,251 @@
+---
+title: "datatrial"
+author: "Arihan Gupta"
+date: "10/6/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+library(ggplot2)
+library(readxl)
+library(matrixStats)
+library(dplyr)
+strains <- c("08", "23", "25", "28", "29", "30")
+rowNum = 180
+dfMasters <- data.frame()
+omitted <- c()
+time <- read_excel("/Users/arihangupta/Downloads/Matt_T lysis curve_10.13.2022.xlsx", range = paste0("B", 56,":AW",56), col_names = FALSE)
+time <- t(time)
+colnames(time) <- "time"
+time <- as.data.frame(time)
+timeminutes <- time/60
+timehours <- timeminutes/60
+time<-timehours
+time
+newtime <- as.list(time[,1])
+```
+
+```{r}
+baserow = 690
+rowNum = 180
+for (dilution in 1:4)
+{
+  for (strain in strains[1:4])
+  {
+    df <- time
+    
+    for(triplicate in 1:3)
+    {
+      
+      data <- read_excel("/Users/arihangupta/Downloads/Matt_T lysis curve_10.13.2022.xlsx", range = paste0("B", rowNum,":AW",rowNum+2), col_names = FALSE)
+      data <- t(data)
+      means <- rowMeans(data, na.rm = TRUE)
+      newtimes <- rowMeans(time)
+      trialSlope <- lm(means~newtimes)
+      coef <- coef(trialSlope)
+      # data <- as.data.frame(data)
+      # objectStore <- cbind(data, means)
+      # objectStore <- cbind(objectStore, time)
+      # assign(paste0("LZ",strain,".",triplicate, ".",dilution,"00"), objectStore)
+      # df <- cbind(df, data)
+      if(coef[2] > 0.01)
+      {
+        data <- as.data.frame(data)
+        objectStore <- cbind(data, means)
+        objectStore <- cbind(objectStore, time)
+        assign(paste0("LZ",strain,".",triplicate, ".",dilution,"00"), objectStore)
+        df <- cbind(df, data)
+      }
+      else
+      {
+        data <- as.data.frame(data)
+        objectStore <- cbind(data, means)
+        objectStore <- cbind(objectStore, time)
+        assign(paste0("LZ",strain,".",triplicate, ".",dilution,"00"), objectStore)
+        data[] <- NA
+        df <- cbind(df, data)
+        print(paste0("omitted -> ", "LZ",strain,".",triplicate, ".",dilution,"00"))
+        omitted <- c(omitted, paste0("omitted -> ", "LZ",strain,".",triplicate, ".",dilution,"00"))
+      }
+      
+      rowNum <- rowNum + 10
+      
+    }
+    df <- df[,-1]
+    od <- rowMeans(df, na.rm = TRUE)
+    od <- as.data.frame(od)
+    dfmat <- data.matrix(df)
+    stddev <- rowSds(dfmat, na.rm = TRUE)
+    stddev <- as.data.frame(stddev)
+    id <- rep(paste0("LZ",strain),48)
+    id <- as.data.frame(id)
+    dil <- rep(paste0(dilution,"00"),48)
+    dil <- as.data.frame(dil)
+    dfFinal <- data.frame(id, dil, time, df, od, stddev)
+    dfMasters <- rbind(dfMasters, dfFinal)
+  }
+}
+rowNum = 660
+for(dilution in 1:4)
+{
+  for(strain in strains[5:6])
+  {
+    df <- time
+    for(triplicate in 1:3)
+    {
+      data <- read_excel("/Users/arihangupta/Downloads/Matt_T lysis curve_10.13.2022.xlsx", range = paste0("B", rowNum,":AW",rowNum+2), col_names = FALSE)
+      data <- t(data)
+      means <- rowMeans(data, na.rm = TRUE)
+      newtimes <- rowMeans(time)
+      trialSlope <- lm(means~newtimes)
+      coef <- coef(trialSlope)
+      # data <- as.data.frame(data)
+      # objectStore <- cbind(data, means)
+      # objectStore <- cbind(objectStore, time)
+      # assign(paste0("LZ",strain,".",triplicate, ".",dilution,"00"), objectStore)
+      # df <- cbind(df, data)
+      if(coef[2] > 0.01)
+      {
+        data <- as.data.frame(data)
+        objectStore <- cbind(data, means)
+        objectStore <- cbind(objectStore, time)
+        assign(paste0("LZ",strain,".",triplicate, ".",dilution,"00"), objectStore)
+        df <- cbind(df, data)
+      }
+      else
+      {
+        data <- as.data.frame(data)
+        objectStore <- cbind(data, means)
+        objectStore <- cbind(objectStore, time)
+        assign(paste0("LZ",strain,".",triplicate, ".",dilution,"00"), objectStore)
+        data[] <- NA
+        df <- cbind(df, data)
+        print(paste0("omitted -> ", "LZ",strain,".",triplicate, ".",dilution,"00"))
+        omitted <- c(omitted, paste0("omitted -> ", "LZ",strain,".",triplicate, ".",dilution,"00"))
+      }
+      
+      rowNum <- rowNum + 10
+    }
+    df <- df[,-1]
+    od <- rowMeans(df, na.rm = TRUE)
+    od <- as.data.frame(od)
+    dfmat <- data.matrix(df)
+    stddev <- rowSds(dfmat, na.rm = TRUE)
+    stddev <- as.data.frame(stddev)
+    id <- rep(paste0("LZ",strain),48)
+    id <- as.data.frame(id)
+    dil <- rep(paste0(dilution,"00"),48)
+    dil <- as.data.frame(dil)
+    dfFinal <- data.frame(id, dil, time, df, od, stddev)
+    dfMasters <- rbind(dfMasters, dfFinal)
+  }
+  
+    
+}
+dfMasters <- dfMasters[, -c(4:12)]
+dfMasters <- cbind(dfMasters, log(dfMasters$od))
+names(dfMasters)[names(dfMasters) == "log(dfMasters$od)"] <- "log"
+dfMasters$time <- round(dfMasters$time, 1)
+```
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r}
+p1 <- ggplot(data = dfMasters, mapping = aes(x= time, y= od, color = dil)) + xlab("Time") + ylab("Optical Density") + labs(colour = "Dilution") + geom_line() + geom_errorbar(aes(ymin = od-stddev, ymax = od+stddev,width = 0.2)) + facet_wrap(~id)
+p1
+for(i in 1:length(omitted))
+{
+  print(omitted[i])
+}
+p2 <- ggplot(data = dfMasters, mapping = aes(x= time, y= od, color = id)) + geom_line() + xlab("Time") + ylab("Optical Density") + labs(colour = "Strain") + geom_errorbar(aes(ymin = od-stddev, ymax = od+stddev,width = 0.2)) + facet_wrap(~dil)
+p2
+p3 <- ggplot(data = dfMasters, mapping = aes(x= time, y= log, color = dil)) + geom_line() + xlab("Time") + ylab("Log of Optical Density") + labs(colour = "Strain") + facet_wrap(~id)
+p3
+```
+```{r}
+dfNew<- data.frame()
+dilAvg <- c()
+idAvg <- data.frame()
+calculate.growthRate <- function(dataFrame, timepoint)
+{
+  interval = 2.5
+  y1 <- dataFrame$log[match(timepoint,dataFrame$time)]
+  y2 <- dataFrame$log[match((timepoint + interval),dataFrame$time)]
+  growthRate = (y2-y1)/interval
+  doublingTime = log(2)/growthRate
+  stringToReturn <- paste0("Strain: ", dataFrame$id[1],". Dilution: ", dataFrame$dil[1],". Doubling Time: ", doublingTime )
+  return(doublingTime)
+}
+askUser <- function()
+{
+  timeStart = readline()
+  timeStart = as.integer(timeStart)
+  return(timeStart)
+}
+sortFunction <- dfMasters %>% group_by(id, dil)
+# sortID <- 
+# sortDil <- dfMasters %>% group_by(dil)
+splitList <- group_split(sortFunction)
+timeStart <- 7.5
+sum = 0
+for(strainNumber in 1:length(splitList))
+{
+  
+  if((strainNumber-1)%%4 == 0)
+  {
+    timeStart <- readline()
+    timeStart <- as.integer(timeStart)
+  }
+  
+  temp <- splitList[[strainNumber]]
+  dt <- calculate.growthRate(temp,timeStart)
+  print(dt)
+  dilAvg <- cbind(dilAvg, dt)
+  if((strainNumber)%%4 == 0 && strainNumber != 1)
+  {
+    colnames(dilAvg) <- c("100", "200", "300", "400")
+    idAvg <- rbind(idAvg, dilAvg)
+    dilAvg <- c()
+  }
+  newTab <- mutate(splitList[[strainNumber]], doubleTime = rep(dt, 48))
+  dfNew<- rbind(dfNew, newTab)
+ }
+idAvg <- cbind(idAvg, rowMeans(idAvg,na.rm=TRUE))
+colnames(idAvg) <- c("100", "200", "300", "400", "means")
+print(idAvg)
+dfMasters<-dfNew
+```
+
+```{r}
+strainNum <- "08"
+dilutionNum <- 200
+dftrial <- time
+dftrial <- rbind(dftrial, time)
+dftrial <- rbind(dftrial, time)
+meansdf <- data.frame(matrix(nrow = 0, ncol = 2))
+for(triple in 1:3)
+{
+  tempdf <- data.frame(ncols = NULL)
+  obj <-paste0("LZ", strainNum, ".", triple, ".", dilutionNum)
+  tempdf <- rbind(tempdf,as.data.frame(get(obj)[,4]))
+  tempid <- rep(as.character(triple),48)
+  tempdf <- cbind(tempdf, as.data.frame(tempid))
+  meansdf <- rbind(meansdf,tempdf)
+  
+}
+dftrial<-cbind(dftrial, meansdf)
+colnames(dftrial) <- c("Time", "Optical_Density", "Trial_Number")
+p1 <- ggplot(data = dftrial, mapping = aes(x= Time, y= Optical_Density, color = Trial_Number)) + geom_line()
+p1
+```
