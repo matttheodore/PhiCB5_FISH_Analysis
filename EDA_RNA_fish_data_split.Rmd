@@ -34,9 +34,9 @@ packages <- c("ggplot2", "dplyr", "tidyr", "readxl", "ggpubr", "skimr", "DataExp
 ### for this data we need "Biobase", "org.HS.eg.db", "AnnotationDbi" ... but it says these aren't available for this version of R -- they have probably been updated, generally theres an online central database for R and bioconductor especially bioinformatics. 
 
 
-# install.packages(setdiff(packages, rownames(installed.packages()))) 
-# 
-# update.packages (packages) 
+install.packages(setdiff(packages, rownames(installed.packages())))
+
+update.packages (packages)
 
 for (i in 1:length(packages)) {
 
