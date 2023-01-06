@@ -111,8 +111,13 @@ Histograms all look well distributed for the data, may be hard to tell based on 
 
 # NOTE: If doing this with a large dataset it is advisable that you pair down to the relevant data measurements first (so not id or something like that which will simply add a variance noise to everything)
 
-subset_pca <- drop_columns(select_subset_data, "object_id")
-plot_prcomp(subset_pca)
+subset_pca <- select_subset_data |> select(!('object_id' : 'Probability of Junk')) |> select(!('Principal components of the object_0' : "Principal components of the object_8" ))
+
+prcomp -> plot_prcomp(subset_pca)
 
 
 ```
+
+Analysis from PC comparison shows that cells vs junk are mainly differentiated by the changes in statistics of the intensity values in both size and in the channel intensities, but interestingl and excitingly channel 1 intensities (red fluoresence) is not the primary or even close to the primary determinant. All other channels seem to contribute more to each principal component. 
+
+Intriguing. 
