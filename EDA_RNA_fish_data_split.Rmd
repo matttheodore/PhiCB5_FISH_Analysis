@@ -27,16 +27,16 @@ R.Version()
 
 ### Checking and installing packages
 
-```{r, eval = FALSE}
+```{r, results = 'hide'}
 
 packages <- c("ggplot2", "dplyr", "tidyr", "readxl", "ggpubr", "skimr", "DataExplorer", "tidyverse", "skimr", "svglite", "readxl","tidyxl", "ggforce", "ggpubr", "ggsci", "ggthemes", "ragg", "gplots", "devtools", "readr")
 
 ### for this data we need "Biobase", "org.HS.eg.db", "AnnotationDbi" ... but it says these aren't available for this version of R -- they have probably been updated, generally theres an online central database for R and bioconductor especially bioinformatics. 
 
 
-install.packages(setdiff(packages, rownames(installed.packages()))) 
+install.packages(setdiff(packages, rownames(installed.packages())))
 
-update.packages (packages) 
+update.packages (packages)
 
 for (i in 1:length(packages)) {
 
@@ -47,8 +47,6 @@ library(packages[i], character.only = TRUE)
 
 
 ```
-
-
 # Data Import
 
 ```{r}
@@ -130,7 +128,6 @@ ls() # show me all the data objects that are present
 ```
 
 ```{r}
-
 inf0 <- select(rawinf0, 'object_id', 'Size.in.pixels', 'Object.Area',  'Variance.of.Intensity_0', 'Variance.of.Intensity_1', 'Variance.of.Intensity_2', 'Mean.Intensity_0', 'Mean.Intensity_1', 'Mean.Intensity_2', 'Maximum.intensity_0', 'Maximum.intensity_1', 'Maximum.intensity_2', 'Minimum.intensity_0', 'Minimum.intensity_1','Minimum.intensity_2', 'Total.Intensity_0', 'Total.Intensity_1','Total.Intensity_2')
 
 inf0 <- mutate(inf0, corrected_mean_intensity_2 = Mean.Intensity_2/meanInt0, normalized_intensity_2 = (Mean.Intensity_2-meanInt0)/meanInt0, normal_Maximum.intensity_2 = Maximum.intensity_2/meanInt0, cond = (rep("infected", nrow(inf0))), time = (rep("0", nrow(inf0))), id = (rep("inf0", nrow(inf0))))
@@ -188,26 +185,26 @@ plot_missing(data)  # none will show up because no data is missing
 ```
 
 ```{r}
-
-table(FACTORVARIABLES, useNA = "ifany" # it can be useful to put factors in a table, none here though, include NAs to check for NA
-
-
-###--- look for missing values --- #####
-
-
-# is.na checks for NA values
-table(is.na(GFP[1])) # use row or column numbers [] with these if you onyl want to take some columns because they need the structure of the df versus a string call using the $
-
-# Make the distribution of NA's by columns/measurements
-sample_na = rowSums(is.na(data))
-table(sample_na)
-
-# Make the distribution of NA's by samples
-measurement_na = colSums(is.na(data))
-table(measurement_na)
-
-#### Make sure dimensions match up #####
-identical(data$Size.in.pixels, data$Object.Area)  ##check if they are identical colnames and the ids if you have multiple tables (subject information)
+# 
+# table(FACTORVARIABLES, useNA = "ifany" # it can be useful to put factors in a table, none here though, include NAs to check for NA
+# 
+# 
+# ###--- look for missing values --- #####
+# 
+# 
+# # is.na checks for NA values
+# table(is.na(GFP[1])) # use row or column numbers [] with these if you onyl want to take some columns because they need the structure of the df versus a string call using the $
+# 
+# # Make the distribution of NA's by columns/measurements
+# sample_na = rowSums(is.na(data))
+# table(sample_na)
+# 
+# # Make the distribution of NA's by samples
+# measurement_na = colSums(is.na(data))
+# table(measurement_na)
+# 
+# #### Make sure dimensions match up #####
+# identical(data$Size.in.pixels, data$Object.Area)  ##check if they are identical colnames and the ids if you have multiple tables (subject information)
 ```
 
 ```{r}
@@ -244,6 +241,14 @@ data_pca <- drop_columns(data, c("object_id", "Size.in.pixels"))
 data_pca_plot <- plot_prcomp(data)
 ```
 
+```{r}
+bimodal <- c(rnorm(5000, -1, .25), rnorm(5000, 1, .25))
+  
+hist(bimodal, breaks = 30, main = "Bimodal", xlim = c(-2, 2))
+
+qqnorm(bimodal)
+qqline(bimodal, col = "blue", lwd = 2)
+```
 
 # So I am guessing this is where the real data starts, as in the whole dataset?   
 you can answer in normal text, I cannot remember what that does in the knit function we will see. 

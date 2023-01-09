@@ -1,0 +1,123 @@
+# Exploratory Data analysis
+
+
+### Always intiialize the system for good record keeping and we know what versions everything was run on.
+
+```{r}
+
+date()
+Sys.time()
+getwd()
+list.files()
+.libPaths()
+.Library
+sessionInfo()
+search()
+searchpaths()
+R.version.string()
+
+
+```
+
+### Checking and installing packages
+
+```{r}
+
+packages <- c("ggplot2", "dplyr", "tidyr", "readxl", "ggpubr", "skimr", "DataExplorer", "tidyverse", "skimr", "svglite", "readxl","tidyxl", "ggforce", "ggpubr", "ggsci", "ggthemes", "ragg", "readr")
+
+### for this data we need "Biobase", "org.HS.eg.db", "AnnotationDbi" ... but it says these aren't available for this version of R -- they have probably been updated, generally theres an online central database for R and bioconductor especially bioinformatics. 
+
+
+install.packages(setdiff(packages, rownames(installed.packages()))) 
+
+update.packages (packages) 
+
+for (i in 1:length(packages)) {
+
+library(packages[i], character.only = TRUE)
+  
+  
+}
+
+
+```
+
+
+
+### Load the Data
+```{r}
+
+subset_data <- read_csv("Data/20230103_featuretest_table.csv")
+
+```
+
+
+### You can use tables, plots, summaries to look at your data, but introduce() function from data explorer is a great overview 
+
+see 
+https://cran.r-project.org/web/packages/DataExplorer/vignettes/dataexplorer-intro.html#exploratory-data-analysis
+
+for a more formal up to date review when workign with big datasets
+
+```{r}
+introduce(subset_data)
+
+head(subset_data)
+tail(subset_data)
+
+# Relevant Data to us is Size in Pixels, maximum Intensity, Minimum Intensity, Mean Intensity, Variance of Intensity. personally I am going to remake the dataframe with these parameters. 
+
+```
+
+
+```{r}
+
+table(subset_data$`Predicted Class`)
+
+# so this has seen 100 cells and 8 junk pieces... seems a little small on the junk detection. I guess It is the subset, I should bput it through and then check the total dataset. 
+
+select_subset_data <- subset_data |> select(object_id, 'Predicted Class' : 'Covariance of Channel Intensity_8') 
+
+introduce(select_subset_data)
+
+
+## Sometimes real word data can be really messy, another good thing to do can be to plot the missing data as you will see below. This allows us to check the data, even though introduce() tells us numebr of missing values, we want to see where those values are, or if there are none at all. 
+
+plot_missing(select_subset_data)  # none will show up because no data is missing
+
+```
+```{r}
+
+### Take a look at the distribution of all the variables ###
+
+plot_histogram(select_subset_data)
+
+
+# Slicing and dicing can be crucial to analysis and see where you get variations. If you want to predict an outcome, it is good to look at all the features based on that value. 
+
+plot_boxplot(select_subset_data, by = 'Predicted Class')
+plot_boxplot(select_subset_data, by ='Size in Pixels')
+
+# Finally there is Principal component analysis, this is a way of taking very large datasets and converging their covariances onto a few principal components( groups containing multiple attributes. Basically kind of a lazy way of first looking at where most of the variance comes from and then checking into those principal components, by convention PC1 being the largest)
+```
+
+# My Analysis 
+
+Histograms all look well distributed for the data, may be hard to tell based on binning but it looks fairly good. The boxplots plotted based on their identity allows a direct comparison, this is showing me that for most purposes cells and junk look the same which is great because these are uninfected cells. I should run the pipeline for all of the data and then rerun this pipeline to see if this hypothesis still holds. Maybe infected cells will show us something different. 
+
+
+
+```{r}
+
+# NOTE: If doing this with a large dataset it is advisable that you pair down to the relevant data measurements first (so not id or something like that which will simply add a variance noise to everything)
+
+subset_pca <- select_subset_data |> select(!('object_id' : 'Probability of Junk')) |> select(!('Principal components of the object_0' : "Principal components of the object_8" ))
+
+prcomp -> plot_prcomp(subset_pca)
+
+
+```
+
+Analysis from PC comparison shows that cells vs junk are mainly differentiated by the changes in statistics of the intensity values in both size and in the channel intensities, but interestingl and excitingly channel 1 intensities (red fluoresence) is not the primary or even close to the primary determinant. All other channels seem to contribute more to each principal component. 
+
+Intriguing. 
