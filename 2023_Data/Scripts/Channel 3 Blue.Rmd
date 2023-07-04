@@ -1,0 +1,109 @@
+---
+title: "Channel 3 Blue"
+author: "Arihan Gupta"
+date: "2023-06-13"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+local({r <- getOption("repos")
+       r["CRAN"] <- "https://cran.r-project.org" 
+       options(repos=r)
+})
+#install.packages(c(
+#  "colorBlindness", "directlabels", "dplyr", "ggforce", "gghighlight", 
+#  "ggnewscale", "ggplot2", "ggraph", "ggrepel", "ggtext", "ggthemes", 
+#  "hexbin", "Hmisc", "mapproj", "maps", "munsell", "ozmaps", 
+#  "paletteer", "patchwork", "rmapshaper", "scico", "seriation", "sf", 
+#  "stars", "tidygraph", "tidyr", "wesanderson", repos='http://cran.us.r-project.org'
+#))
+library(readr)
+library(ggplot2)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+
+dataFinal <- read.csv("/Users/arihangupta/Downloads/PhiCB5-Analysis-2023/final")
+dataFinal$strain <- as.factor(dataFinal$strain)
+dataFinal$cond <- as.factor(dataFinal$cond)
+dataFinal <- cbind(dataFinal, avgInt = dataFinal[,1]/dataFinal[,2])
+id <- paste(dataFinal[,7], "_",dataFinal[, 6], "_" ,dataFinal[,8], sep = "")
+dataFinal <- cbind(dataFinal, id)
+new_order <- c("totInt", "cellArea", "avgInt", "cellnum", "bkgrdInt", "frame", "cond", "time", "strain", "id")
+dataFinal <- dataFinal[ ,new_order]
+dataFinal$id <- as.factor(dataFinal$id)
+numCols <- ncol(dataFinal)
+for (i in 1:5)
+{
+  columnData <- dataFinal[,i]
+  hist(columnData, main = paste("histogram of column", i), xlab = "value", col = "lightblue", breaks = 40)
+}
+
+```
+
+```{r}
+
+
+# Set the file path to your CSV file
+file_path <- "/Users/arihangupta/Downloads/PhiCB5-Analysis-2023/finalData.csv"
+
+# Import the CSV file into a data frame named 'data'
+data <- read_csv(file_path, col_types = cols(
+  totInt = col_double(),
+  cellArea = col_double(),
+  cellnum = col_double(),
+  bkgrdInt = col_double(),
+  frame = col_factor(),
+  cond = col_factor(),
+  time = col_double(),
+  strain = col_factor()
+), col_names = c("totInt", "cellArea", "cellnum", "bkgrdInt", "frame", "cond", "time", "strain"))
+
+# Display the imported data frame
+print(data)
+```
+
+```{r}
+p1 <- ggplot(data = dataFinal, mapping = aes(x= avgInt)) + geom_histogram() + facet_wrap(~id)
+p1
+strainTest <- dataFinal[dataFinal$strain == "LZ22333",]
+tempDf <- strainTest[strainTest$time == 180,]
+p1 <- ggplot(data = tempDf[tempDf$avgInt > 15827.53,], mapping = aes(x= avgInt-15827.53, fill = cond)) + geom_histogram(binwidth = 700) + facet_wrap(~cond)
+meanBkgd <- mean(unique(strainTest$bkgrdInt))
+sdBkgd <- sd(unique(strainTest$bkgrdInt))
+p1
+```
+## Including Plots
+```{r}
+for (condit in unique(tempDf$cond)){
+  
+  new<-tempDf[tempDf$cond == condit,]
+  numCells <- nrow(new)
+  
+  flor <- new[new$avgInt > 15827.53,]
+  numCellFluor <- nrow(flor)
+  
+  percent <- 100*(numCellFluor)/numCells
+  print(paste("For ", condit, ", total number of cells: ", numCells, " Number of fluorescent cells: ", numCellFluor, " Percent of cells the fluoresce: ", percent))
+}
+mean(dataFinal[dataFinal$id == '180_0nM-I_LZ22333',]$avgInt)
+sd(dataFinal[dataFinal$id == '180_0nM-I_LZ22333',]$avgInt)
+```
+> mean(dataFinal[dataFinal$cond == '-C-vector',]$avgInt)
+[1] 6899.207
+> max(dataFinal[dataFinal$cond == '-C-vector',]$avgInt)
+[1] 26875.32
+> sd(dataFinal[dataFinal$cond == '-C-vector',]$avgInt)
+[1] 5608.907
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
