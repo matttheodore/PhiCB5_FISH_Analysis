@@ -1,0 +1,75 @@
+---
+title: "cDNA_Ochre_analysis"
+author: "MT"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# Import data and perform initial cleaning
+dataFinal <- read.csv("Data/FISH_final.csv") %>%
+  mutate(strain = as.factor(strain),
+         cond = as.factor(cond),
+         avgInt = totInt / cellArea,
+         id = paste(cond, "_", strain, "_", time, sep = "")) %>%
+  select(totInt, cellArea, avgInt, cellnum, bkgrdInt, frame, cond, time, strain, id) %>%
+  mutate(id = as.factor(id))
+
+
+# Plot histograms for numerical columns
+purrr::walk(names(select_if(dataFinal, is.numeric)), ~{
+  hist(dataFinal[[.]], main = paste("Histogram of", .), xlab = "Value", col = "lightblue", breaks = 40)
+})
+
+
+# Plot histogram of average intensity, faceted by id
+ggplot(data = dataFinal, mapping = aes(x = avgInt)) + 
+  geom_histogram() + 
+  facet_wrap(~id)
+
+# Filter data for "ochre" condition
+strainTest <- dataFinal %>%
+  filter(cond == 'ochre') %>%
+  summarise(meanBkgd = mean(unique(bkgrdInt)),
+            sdBkgd = sd(unique(bkgrdInt)))
+
+# Plot histogram of average intensity (corrected for background), faceted by time
+ggplot(data = strainTest %>%
+         filter(avgInt > 2822.568), 
+       mapping = aes(x = avgInt - 2822.568, fill = cond)) + 
+  geom_histogram(binwidth = 700) + 
+  facet_wrap(~time)
+
+# Calculate and print the percentage of fluorescent cells for each time point
+dataFinal %>%
+  filter(cond == 'ochre') %>%
+  group_by(time) %>%
+  summarise(totalCells = n(),
+            fluorescentCells = sum(avgInt > 2822.568),
+            percentageFluorescent = 100 * fluorescentCells / totalCells) %>%
+  walk(., function(x) print(paste("For time ", x[["time"]], 
+                                  " total number of cells: ", x[["totalCells"]], 
+                                  " Number of fluorescent cells: ", x[["fluorescentCells"]], 
+                                  " Percent of cells that fluoresce: ", x[["percentageFluorescent"]])))
+
+# Calculate and print statistics for the condition "-C-vector"
+vectorStats <- dataFinal %>%
+  filter(cond == '-C-vector') %>%
+  summarise(mean_vector = mean(avgInt),
+            sd_vector = sd(avgInt))
+
+# Calculate and print statistics for the entire dataset
+totalStats <- dataFinal %>%
+  summarise(mean_total = mean(avgInt),
+            sd_total = sd(avgInt))
+
+
+
+```
+
+
+
