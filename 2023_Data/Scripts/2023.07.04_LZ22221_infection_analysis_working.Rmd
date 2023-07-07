@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 # Import data and perform initial cleaning
-dataFinal <- read.csv("Data/FISH_final.csv") %>%
+dataFinal <- read.csv("2023_Data/FISH_final.csv") %>%
   mutate(strain = as.factor(strain),
          cond = as.factor(cond),
          avgInt = totInt / cellArea,
