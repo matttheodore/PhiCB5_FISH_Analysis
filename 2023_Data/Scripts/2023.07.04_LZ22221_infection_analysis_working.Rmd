@@ -9,9 +9,57 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# ORGANIZE YOUR PROJECT FOLDERS
+You should keep the organization of each project folder the same. This will ensure that scripts are reproducible across different projects (where you pull data from, where you write objects or plots to etc.)
+
+Files to use are:
+- Data
+- Output
+  - Plots (sub folder)
+- Scripts
+
+
+#Housekeeping
+
+```{r}
+date()
+Sys.time()
+getwd()
+list.files()
+.libPaths()
+.Library
+sessionInfo()
+search()
+searchpaths()
+R.version
+
+
+```
+
+# Checking and installing packages
+
+```{r, results = 'hide'}
+
+packages <- c("ggplot2", "dplyr", "tidyr", "readxl", "ggpubr", "skimr", "DataExplorer", "tidyverse", "skimr", "svglite", "readxl","tidyxl", "ggforce", "ggpubr", "ggsci", "ggthemes", "ragg", "magrittr", "reprex", "patchwork", "writexl", 'magick', 'forcats')
+
+# list of packages sometimes I use [   "searcher", "errorist",
+
+install.packages(setdiff(packages, rownames(installed.packages())))
+
+update.packages (packages)
+
+for (i in 1:length(packages)) {
+
+library(packages[i], character.only = TRUE)
+
+
+}
+
+```
+
 ```{r}
 # Import data and perform initial cleaning
-dataFinal <- read.csv("2023_Data/FISH_final.csv") %>%
+dataFinal <- read_csv("2023_Data/Data/20230621FISH_LZ22221.csv") %>%
   mutate(strain = as.factor(strain),
          cond = as.factor(cond),
          avgInt = totInt / cellArea,
@@ -31,45 +79,87 @@ ggplot(data = dataFinal, mapping = aes(x = avgInt)) +
   geom_histogram() + 
   facet_wrap(~id)
 
-# Filter data for "ochre" condition
-strainTest <- dataFinal %>%
-  filter(cond == 'ochre') %>%
-  summarise(meanBkgd = mean(unique(bkgrdInt)),
-            sdBkgd = sd(unique(bkgrdInt)))
+# # Filter data for condition
+# strainTest <- dataFinal %>%
+#   filter(cond == 'ochre') %>%
+#   summarise(meanBkgd = mean(unique(bkgrdInt)),
+#             sdBkgd = sd(unique(bkgrdInt)))
 
 # Plot histogram of average intensity (corrected for background), faceted by time
-ggplot(data = strainTest %>%
-         filter(avgInt > 2822.568), 
-       mapping = aes(x = avgInt - 2822.568, fill = cond)) + 
+ggplot(data = dataFinal %>%
+         filter(avgInt > 2734), 
+       mapping = aes(x = avgInt - 2734, fill = cond)) + 
   geom_histogram(binwidth = 700) + 
   facet_wrap(~time)
 
 # Calculate and print the percentage of fluorescent cells for each time point
 dataFinal %>%
-  filter(cond == 'ochre') %>%
-  group_by(time) %>%
+  group_by(cond,time) %>%
   summarise(totalCells = n(),
             fluorescentCells = sum(avgInt > 2822.568),
             percentageFluorescent = 100 * fluorescentCells / totalCells) %>%
-  walk(., function(x) print(paste("For time ", x[["time"]], 
-                                  " total number of cells: ", x[["totalCells"]], 
-                                  " Number of fluorescent cells: ", x[["fluorescentCells"]], 
-                                  " Percent of cells that fluoresce: ", x[["percentageFluorescent"]])))
-
-# Calculate and print statistics for the condition "-C-vector"
-vectorStats <- dataFinal %>%
-  filter(cond == '-C-vector') %>%
-  summarise(mean_vector = mean(avgInt),
-            sd_vector = sd(avgInt))
-
-# Calculate and print statistics for the entire dataset
-totalStats <- dataFinal %>%
-  summarise(mean_total = mean(avgInt),
-            sd_total = sd(avgInt))
+  rowwise() %>%
+  mutate(result = paste("For time ", time, 
+                        " total number of cells: ", totalCells, 
+                        " Number of fluorescent cells: ", fluorescentCells, 
+                        " Percent of cells that fluoresce: ", percentageFluorescent)) %>%
+  pull(result) %>%
+  walk(print)
 
 
+
+# Summary of data by condition and strain
+summary_table <- dataFinal %>%
+  group_by(cond, strain, time) %>%
+  summarise(
+    n = n(),
+    avg_totInt = mean(totInt),
+    avg_cellArea = mean(cellArea),
+    avg_avgInt = mean(avgInt),
+    sd_totInt = sd(totInt),
+    sd_cellArea = sd(cellArea),
+    sd_avgInt = sd(avgInt),
+    avg_bkgrd = mean(bkgrdInt),
+    sd_bkgrd = sd(bkgrdInt),
+    .groups = 'drop'
+  )
+
+print(summary_table)
+```
+
+From the summary_table we see that our cell numebr for each time point/condition is highly variable which could lead to a skew in teh data analysis allowing for smaller populations of cells to "pull" our values into different directions. We may be able to account for this in our analysis but it is always easiest to first look at data collection and make sure the data collection is being done in a way without biasing our data and in a way that allows for the most streamlines analysis (least variability and need for cleaning)
+
+
+
+
+```{r}
+
+# Print summary table
+print(summary_table)
+
+# Boxplot of average intensity by condition
+ggplot(dataFinal, aes(x = cond, y = avgInt)) +
+  geom_boxplot() +
+  labs(title = "Boxplot of Average Intensity by Condition",
+       x = "Condition",
+       y = "Average Intensity")
+
+# Correlation between total intensity and cell area
+correlation <- cor.test(dataFinal$totInt, dataFinal$cellArea)
+
+# Print correlation
+print(paste("Correlation between total intensity and cell area: ", correlation$estimate))
 
 ```
 
 
 
+```{r}
+# Additional Data Analysis
+
+
+
+
+
+
+```
